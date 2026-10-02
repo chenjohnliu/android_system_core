@@ -54,6 +54,14 @@ using android::base::unique_fd;
 
 static InterceptManager* intercept_manager;
 
+#ifdef TWRP_TMP_TOMBSTONES
+static constexpr char kTombstoneDirectory[] = "/tmp/tombstones";
+static constexpr char kAnrDirectory[] = "/tmp/anr";
+#else
+static constexpr char kTombstoneDirectory[] = "/data/tombstones";
+static constexpr char kAnrDirectory[] = "/data/anr";
+#endif
+
 enum CrashStatus {
   kCrashStatusRunning,
   kCrashStatusQueued,
@@ -126,14 +134,14 @@ class CrashQueue {
   }
 
   static CrashQueue* for_tombstones() {
-    static CrashQueue queue("/data/tombstones", "tombstone_" /* file_name_prefix */,
+    static CrashQueue queue(kTombstoneDirectory, "tombstone_" /* file_name_prefix */,
                             GetIntProperty("tombstoned.max_tombstone_count", 32),
                             1 /* max_concurrent_dumps */, true /* supports_proto */);
     return &queue;
   }
 
   static CrashQueue* for_anrs() {
-    static CrashQueue queue("/data/anr", "trace_" /* file_name_prefix */,
+    static CrashQueue queue(kAnrDirectory, "trace_" /* file_name_prefix */,
                             GetIntProperty("tombstoned.max_anr_count", 64),
                             4 /* max_concurrent_dumps */, false /* supports_proto */);
     return &queue;

@@ -448,6 +448,25 @@ cc_binary {
     init_rc: ["tombstoned/tombstoned.rc"],
 }
 
+// Recovery diagnostics must work before /data has been decrypted.
+cc_binary {
+    name: "tombstoned_m11q_debug",
+    srcs: [
+        "util.cpp",
+        "tombstoned/intercept_manager.cpp",
+        "tombstoned/tombstoned.cpp",
+    ],
+    defaults: ["debuggerd_defaults"],
+    cflags: ["-DTWRP_TMP_TOMBSTONES"],
+    header_libs: [
+        "bionic_libc_platform_headers",
+        "libdebuggerd_common_headers",
+    ],
+    static_libs: [
+        "libbase", "libcutils", "libevent", "liblog",
+    ],
+}
+
 prebuilt_etc {
     name: "crash_dump.policy",
     sub_dir: "seccomp_policy",
